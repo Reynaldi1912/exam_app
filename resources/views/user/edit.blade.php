@@ -24,31 +24,29 @@
                 </div>
                 <p>Menu ini digunakan untuk menambahkan user <b>(peserta ujian)</b> untuk mendapatkan akses ujian pada aplikasi <b>SuApps</b></p>
                 <hr class="mt-4">
-                <form action="{{route('user.post')}}" method="post">
+                <form action="{{route('user.update')}}" method="post">
                     @csrf
                     <div class="row">
                         <div class="col-6">
                             <label class="pb-2">username <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" placeholder="ex : johndoe123" name="username">
+                            <input type="text" class="form-control" placeholder="ex : johndoe123" value="{{$data->username}}" name="username">
+                            <input type="hidden" class="form-control" placeholder="ex : johndoe123" value="{{$data->id}}" name="id">
                         </div>
-
                         <div class="col-6">
                             <label class="pb-2">email <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" placeholder="ex : johndoe123.exam.com" name="email">
+                            <input type="text" class="form-control" placeholder="ex : johndoe123.exam.com" value="{{$data->email}}" name="email">
                         </div>
-
                         <div class="col-6 pt-2">
                             <label class="pb-2">password <span class="text-danger">*</span></label>
                             <input type="password" class="form-control" placeholder="ex : ****" name="password">
                         </div>
-
                         <div class="col-6 pt-2">
                             <label class="pb-2">confirm password <span class="text-danger">*</span></label>
                             <input type="password" class="form-control" placeholder="ex : ****" name="password_confirm">
                         </div>
 
                         <div class="col pt-2">
-                            <label class="pb-2">Exam App</label>
+                            <label class="pb-2">Exam App </label>
                             <input type="hidden" value="{{$exam_app->id}}" class="form-control" name="exam_app" readonly>
                             <input type="text" value="{{$exam_app->name}}" class="form-control" readonly>
                         </div>
