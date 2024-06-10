@@ -38,6 +38,7 @@
                             <th>description</th>
                             <th>duration</th>
                             <th data-type="date" data-format="YYYY/DD/MM">start at</th>
+                            <th>user</th>
                             <th>action</th>
                         </tr>
                     </thead>
@@ -48,9 +49,10 @@
                             <td>{{$data->description}}</td>
                             <td>{{$data->duration}}</td>
                             <td>{{$data->start_at}}</td>
+                            <td><a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#verticalycentered">10 user</a></td>
                             <td>
-                                <a href="{{route('user.edit', $data->id)}}" class="btn btn-outline-primary pe-2"><i class="bi bi-pencil"></i></a>
-                                <a href="{{route('user.delete', $data->id)}}" class="btn btn-outline-danger"><i class="bi bi-trash"></i></a>
+                                <a href="{{route('exam.edit', $data->id)}}" class="btn btn-outline-primary pe-2"><i class="bi bi-pencil"></i></a>
+                                <a href="{{route('exam.delete', $data->id)}}" class="btn btn-outline-danger"><i class="bi bi-trash"></i></a>
                             </td>
                         </tr>
                         @endforeach
@@ -64,4 +66,47 @@
         </div>
       </div>
     </section>
+
+    <div class="modal fade" id="verticalycentered" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">User Exams</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="col-12">
+                <div class="overflow-auto">
+                    <table class="table table-borderless datatable">
+                      <thead>
+                          <tr>
+                              <th>username</th>
+                              <th>exams</th>
+                              <th>action</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          @foreach($exam AS $data)
+                          <tr>
+                              <td>{{$data->name}}</td>
+                              <td>{{$data->description}}</td>
+                              <td>
+                                <div class="form-check form-switch text-center">
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked="" onchange="">
+                                </div>
+                              </td>
+                          </tr>
+                          @endforeach
+                      </tbody>
+                    </table>
+                </div>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div><!-- End Vertically centered Modal-->
 @endsection

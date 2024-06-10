@@ -20,8 +20,11 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
 
     Route::get('/exam', [ExamControllers::class, 'index_GET'])->name('exam.index');
     Route::get('/exam-create', [ExamControllers::class, 'create_GET'])->name('exam.create');
+    Route::get('/exam-edit/{id}', [ExamControllers::class, 'edit_GET'])->name('exam.edit');
 
     Route::post('/exam-create-post', [ExamControllers::class, 'create_POST'])->name('exam.post');
+    Route::post('/exam-create-update', [ExamControllers::class, 'edit_POST'])->name('exam.update');
+    Route::get('/exam-delete/{id}', [ExamControllers::class, 'delete_GET'])->name('exam.delete');
 
     Route::get('/logout', [AuthControllers::class, 'logout_GET'])->name('logout');
 });

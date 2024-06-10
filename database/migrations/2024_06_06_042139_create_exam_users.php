@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->integer('exam_id');
             $table->integer('user_id');
-            $table->datetime('start_at');
-            $table->datetime('finish_at');
+            $table->datetime('start_at')->nullable();
+            $table->datetime('finish_at')->nullable();
             $table->timestamps();
         });
     }
