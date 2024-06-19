@@ -10,11 +10,25 @@ class ExamControllers extends Controller
     public function index_GET(Request $request){
         $user_id = Auth::user()->id;
         $exam = DB::SELECT(
-            "SELECT
-                e.*,
-                ae.user_id
-            FROM exams AS e LEFT JOIN app_exam AS ae ON e.app_exam_id = ae.id
-            WHERE ae.user_id= $user_id"
+                "SELECT
+                    e.*,
+                    ae.user_id,
+                    COUNT(eu.id) AS total_user,
+                    CONCAT('[', GROUP_CONCAT(
+                        DISTINCT JSON_OBJECT(
+                            'id', u.id,
+                            'username', u.username,
+                            'email', u.email,
+                            'status' , CASE WHEN eu.id THEN true ELSE false END 
+                        )
+                        ORDER BY u.id
+                    ), ']') AS users
+                FROM exams AS e
+                LEFT JOIN app_exam AS ae ON e.app_exam_id = ae.id
+                LEFT JOIN users AS u ON ae.id = u.exam_app AND u.role = 'user'
+                LEFT JOIN exam_users AS eu ON u.id = eu.user_id
+                WHERE ae.user_id = $user_id
+                GROUP BY e.id, ae.user_id"
         );
 
         return view('exams.index',['exam'=>$exam]);
