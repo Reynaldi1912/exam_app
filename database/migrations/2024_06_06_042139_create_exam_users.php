@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('user_id');
             $table->datetime('start_at')->nullable();
             $table->datetime('finish_at')->nullable();
+            $table->integer('status')->default(0);
             $table->timestamps();
         });
     }

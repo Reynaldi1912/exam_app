@@ -46,7 +46,7 @@
                                             <td>{{ $exam->description }}</td>
                                             <td>{{ $exam->duration }}</td>
                                             <td>{{ $exam->start_at }}</td>
-                                            <td><a href="#" class="btn btn-primary show-users-modal" data-bs-toggle="modal" onclick="showUsersModal({{ json_encode($exam->users) }});" data-bs-target="#verticalycentered">{{ $exam->total_user }} participant</a></td>
+                                            <td><a href="#" class="btn btn-primary show-users-modal" data-bs-toggle="modal" onclick="showUsersModal({{ json_encode($exam->users) }} , {{$exam->id}});" data-bs-target="#verticalycentered">{{ $exam->total_user }} participant</a></td>
                                             <td>
                                                 <a href="{{ route('exam.edit', $exam->id) }}" class="btn btn-outline-primary pe-2"><i class="bi bi-pencil"></i></a>
                                                 <a href="{{ route('exam.delete', $exam->id) }}" class="btn btn-outline-danger"><i class="bi bi-trash"></i></a>
@@ -95,7 +95,7 @@
     <!-- End Modal -->
 
     <script>
-        function showUsersModal(users) {
+        function showUsersModal(users , id) {
             var userTableBody = document.getElementById('userTableBody');
             userTableBody.innerHTML = '';
             var users = JSON.parse(users);
@@ -108,7 +108,7 @@
                                   '<td>' + user.email + '</td>' +
                                   '<td>' +
                                   '<div class="form-check form-switch">' +
-                                  '<input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" ' + (user.status ? 'checked' : '') + '>' +
+                                  '<input class="form-check-input" type="checkbox" onchange="changeStatusUser('+id+' , '+user.id+');" id="userExamStatus" ' + (user.status ? 'checked' : '') + '>' +
                                   '</div>' +
                                   '</td>';
                   userTableBody.appendChild(row);
@@ -120,6 +120,29 @@
                 userTableBody.appendChild(row);
             }
         }
-    </script>
+
+
+
+
+        function changeStatusUser(id, user_id) {
+            var changeUserExamStatus = document.querySelector('#userExamStatus').checked ? 1 : 0;
+            $.ajax({
+                url: '/exam-user-update',
+                type: 'POST',
+                data: {
+                    id: id,
+                    user_id: user_id,
+                    status: changeUserExamStatus,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    location.reload();
+                },
+                error: function(xhr, status, error) {
+                    alert('Terjadi kesalahan: ' + xhr.responseText);
+                }
+            });
+        }
+</script>
 
 @endsection

@@ -24,7 +24,7 @@ class AuthControllers extends Controller
             Auth::loginUsingId($userObject->id); 
             return redirect()->intended('/');
         } else {
-            return redirect('/login')->with('error', 'Invalid credentials');
+            return redirect('/login')->with('danger', 'Invalid credentials');
         }
     }
     public function logout_GET(Request $request)

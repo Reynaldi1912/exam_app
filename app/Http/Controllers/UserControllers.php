@@ -38,7 +38,7 @@ class UserControllers extends Controller
             'password' => md5($request->password),
             'exam_app' => $request->exam_app,
         ]);
-        return back()->with('success','edit user successfully');;
+        return back()->with('success','edit user successfully');
     }
     public function delete_GET($id){
         DB::table('users')->where('id',$id)->delete();

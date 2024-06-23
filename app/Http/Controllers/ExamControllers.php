@@ -26,11 +26,12 @@ class ExamControllers extends Controller
                 FROM exams AS e
                 LEFT JOIN app_exam AS ae ON e.app_exam_id = ae.id
                 LEFT JOIN users AS u ON ae.id = u.exam_app AND u.role = 'user'
-                LEFT JOIN exam_users AS eu ON u.id = eu.user_id
+                LEFT JOIN exam_users AS eu ON u.id = eu.user_id AND eu.status = 1
                 WHERE ae.user_id = $user_id
                 GROUP BY e.id, ae.user_id"
         );
 
+        // echo json_encode($exam);die();
         return view('exams.index',['exam'=>$exam]);
     }
 
@@ -84,4 +85,39 @@ class ExamControllers extends Controller
         DB::table('exams')->where('id',$id)->delete();
         return back()->with('success','delete exam successfully');;
     }
-}
+    public function change_exam_user_POST(Request $request) {
+        try {
+            $id = $request->id;
+            $user_id = $request->user_id;
+            $status = $request->status;
+    
+            // Memastikan menggunakan query builder dengan benar
+            $check = DB::table('exam_users')
+                        ->where('exam_id', $id)
+                        ->where('user_id', $user_id)
+                        ->first();
+    
+            if ($check != NULL) {
+                DB::table('exam_users')
+                    ->where('exam_id', $id)
+                    ->where('user_id', $user_id)
+                    ->update([
+                        'status' => $status,
+                        'updated_at' => now()
+                    ]);
+                return response()->json(['message' => 'Status updated successfully'], 200);
+            } else {
+                DB::table('exam_users')->insert([
+                    'exam_id' => $id,
+                    'user_id' => $user_id,
+                    'status' => $status,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+                return response()->json(['message' => 'User added successfully'], 201);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
+        }
+    }
+}    

@@ -191,25 +191,12 @@
     </a>
   </li><!-- End Profile Page Nav -->
 
-
   <li class="nav-item">
-    <a class="nav-link collapsed" data-bs-target="#user-nav" data-bs-toggle="collapse" href="#">
-      <i class="bi bi-people"></i><span>Users</span><i class="bi bi-chevron-down ms-auto"></i>
+    <a class="nav-link collapsed" href="{{route('user.index')}}">
+      <i class="bi bi-people"></i>
+      <span>User</span>
     </a>
-    <ul id="user-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-      <li>
-        <a href="{{route('user.index')}}">
-          <i class="bi bi-circle"></i><span>User</span>
-        </a>
-      </li>
-      <li>
-        <a href="tables-data.html">
-          <i class="bi bi-circle"></i><span>Exam User</span>
-        </a>
-      </li>
-    </ul>
-  </li><!-- End Tables Nav -->
-
+  </li><!-- End Profile Page Nav -->
 </ul>
 
 </aside><!-- End Sidebar-->

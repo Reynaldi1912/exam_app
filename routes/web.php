@@ -22,6 +22,7 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::get('/exam-create', [ExamControllers::class, 'create_GET'])->name('exam.create');
     Route::get('/exam-edit/{id}', [ExamControllers::class, 'edit_GET'])->name('exam.edit');
 
+    Route::post('/exam-user-update', [ExamControllers::class, 'change_exam_user_POST'])->name('exam_user.update');
     Route::post('/exam-create-post', [ExamControllers::class, 'create_POST'])->name('exam.post');
     Route::post('/exam-create-update', [ExamControllers::class, 'edit_POST'])->name('exam.update');
     Route::get('/exam-delete/{id}', [ExamControllers::class, 'delete_GET'])->name('exam.delete');
@@ -33,3 +34,5 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthControllers::class, 'login_GET'])->name('login');
     Route::post('/login', [AuthControllers::class, 'login_POST']);
 });
+
+

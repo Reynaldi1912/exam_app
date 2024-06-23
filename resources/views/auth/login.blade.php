@@ -25,7 +25,15 @@
   <link href="/niceadmin/assets/vendor/quill/quill.bubble.css" rel="stylesheet">
   <link href="/niceadmin/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
   <link href="/niceadmin/assets/vendor/simple-datatables/style.css" rel="stylesheet">
-
+  <style>
+    .alert-absolute {
+        position: fixed;
+        bottom: 20px; /* Sesuaikan jarak dari bawah sesuai kebutuhan */
+        right: 20px; /* Sesuaikan jarak dari kanan sesuai kebutuhan */
+        z-index: 9999; /* Pastikan nilai z-index lebih tinggi dari elemen lain */
+        width: auto; /* Sesuaikan lebar sesuai kebutuhan */
+    }
+</style>
   <!-- Template Main CSS File -->
   <link href="/niceadmin/assets/css/style.css" rel="stylesheet">
 
@@ -39,6 +47,22 @@
 </head>
 
 <body>
+
+@if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show alert-absolute" role="alert" id="autoDismissAlert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if (session('danger'))
+        <div class="alert alert-danger alert-dismissible fade show alert-absolute" role="alert" id="autoDismissAlert">
+            {{ session('danger') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+
 
   <main>
     <div class="container">
@@ -116,6 +140,20 @@
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
+
+  
+  <script>
+    // Tunggu hingga halaman selesai dimuat
+    document.addEventListener('DOMContentLoaded', (event) => {
+        // Temukan elemen alert
+        const alert = document.getElementById('autoDismissAlert');
+        
+        // Setel timeout untuk menghapus alert setelah 5 detik
+        setTimeout(() => {
+            alert.classList.remove('show');
+        }, 5000);
+    });
+</script>
   <!-- Vendor JS Files -->
   <script src="/niceadmin/assets/vendor/apexcharts/apexcharts.min.js"></script>
   <script src="/niceadmin/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
