@@ -95,37 +95,37 @@
     <!-- End Modal -->
 
     <script>
-        function showUsersModal(users , id) {
+       function showUsersModal(users, id) {
             var userTableBody = document.getElementById('userTableBody');
             userTableBody.innerHTML = '';
-            var users = JSON.parse(users);
+            users = JSON.parse(users);
 
+            console.log(users);
             if (users && users.length > 0) {
-              users.forEach(function(user) {
-                  var row = document.createElement('tr');
-                  row.innerHTML = '<td>' + user.id + '</td>' +
-                                  '<td>' + user.username + '</td>' +
-                                  '<td>' + user.email + '</td>' +
-                                  '<td>' +
-                                  '<div class="form-check form-switch">' +
-                                  '<input class="form-check-input" type="checkbox" onchange="changeStatusUser('+id+' , '+user.id+');" id="userExamStatus" ' + (user.status ? 'checked' : '') + '>' +
-                                  '</div>' +
-                                  '</td>';
-                  userTableBody.appendChild(row);
-              });
+                users.forEach(function(user, index) {
+                    var row = document.createElement('tr');
+                    var checkboxId = 'userExamStatus_' + index; // Unique ID for each checkbox
+                    row.innerHTML = '<td>' + user.id + '</td>' +
+                                    '<td>' + user.username + '</td>' +
+                                    '<td>' + user.email + '</td>' +
+                                    '<td>' +
+                                    '<div class="form-check form-switch">' +
+                                    '<input class="form-check-input" type="checkbox" onchange="changeStatusUser(this, '+id+', '+user.id+');" id="' + checkboxId + '" ' + (user.status ? 'checked' : '') + '>' +
+                                    '</div>' +
+                                    '</td>';
+                    userTableBody.appendChild(row);
+                });
 
             } else {
                 var row = document.createElement('tr');
-                row.innerHTML = '<td colspan="3">No users available.</td>';
+                row.innerHTML = '<td colspan="4">No users available.</td>';
                 userTableBody.appendChild(row);
             }
         }
 
-
-
-
-        function changeStatusUser(id, user_id) {
-            var changeUserExamStatus = document.querySelector('#userExamStatus').checked ? 1 : 0;
+        function changeStatusUser(checkbox, id, user_id) {
+            var changeUserExamStatus = checkbox.checked ? 1 : 0;
+            console.log(changeUserExamStatus + '|' + id + '|' + user_id);
             $.ajax({
                 url: '/exam-user-update',
                 type: 'POST',
@@ -143,6 +143,7 @@
                 }
             });
         }
+
 </script>
 
 @endsection

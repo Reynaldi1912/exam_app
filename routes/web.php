@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthControllers;
 use App\Http\Controllers\HomeControllers;
 use App\Http\Controllers\UserControllers;
 use App\Http\Controllers\ExamControllers;
+use App\Http\Controllers\QuestionControllers;
 
 
 Route::middleware(['auth', 'auth.session'])->group(function () {
@@ -26,6 +27,11 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::post('/exam-create-post', [ExamControllers::class, 'create_POST'])->name('exam.post');
     Route::post('/exam-create-update', [ExamControllers::class, 'edit_POST'])->name('exam.update');
     Route::get('/exam-delete/{id}', [ExamControllers::class, 'delete_GET'])->name('exam.delete');
+
+
+    Route::get('/exam-question', [QuestionControllers::class, 'index_GET'])->name('question.index');
+    Route::get('/create-question/{id}', [QuestionControllers::class, 'create_GET'])->name('question.create');
+    Route::post('/insert-question', [QuestionControllers::class, 'insert_POST'])->name('question.post');
 
     Route::get('/logout', [AuthControllers::class, 'logout_GET'])->name('logout');
 });
