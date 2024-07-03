@@ -158,7 +158,7 @@
             <textarea name="statement[]" class="form-control"></textarea>
             <div class="input-group mb-3 d-none">
                 <label for="match${matchIndex}">Pasangan</label>
-                <textarea name="match_text[]" class="form-control" placeholder="Teks Jawaban"></textarea>
+                <textarea name="match_text[]" class="form-control"></textarea>
             </div>
             <label for="match${matchIndex}">Pasangan</label>
             <div class="input-group mb-3 d-none">
@@ -193,7 +193,7 @@
         } else {
             return `
                 <label for="match${matchIndex}">Pasangan</label>
-                <textarea name="match_text[]" class="form-control" placeholder="Teks Jawaban"></textarea>
+                <textarea name="match_text[]" class="form-control" placeholder="Teks"></textarea>
             `;
         }
     }
@@ -234,7 +234,7 @@
         for (let i = 0; i < matchWrappers.length; i++) {
             const matchWrapper = matchWrappers[i];
             const imageInput = matchWrapper.querySelector('input[type="file"]');
-            const textAreaInput = matchWrapper.querySelector('textarea[name="match_text[]"]');
+            // const textAreaInput = matchWrapper.querySelector('textarea[name="match_text[]"]');
             const previewImage = matchWrapper.querySelector('img');
 
             if (imageInput.files.length > 0) {
@@ -245,13 +245,13 @@
                     return false;
                 }
             } else {
-                textAreaInput.value = '';
+                // textAreaInput.value = '';
                 previewImage.src = '';
 
-                if (textAreaInput.value.trim() !== '') {
-                    alert('Hapus teks jawaban karena gambar belum dipilih.');
-                    return false;
-                }
+                // if (textAreaInput.value.trim() !== '') {
+                //     alert('Hapus teks jawaban karena gambar belum dipilih.');
+                //     return false;
+                // }
             }
         }
 

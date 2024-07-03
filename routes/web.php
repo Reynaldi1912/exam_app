@@ -33,6 +33,9 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::get('/create-question/{id}', [QuestionControllers::class, 'create_GET'])->name('question.create');
     Route::post('/insert-question', [QuestionControllers::class, 'insert_POST'])->name('question.post');
 
+    Route::get('/running-exam', [ExamControllers::class, 'runningExam_GET'])->name('exam.running');
+
+
     Route::get('/logout', [AuthControllers::class, 'logout_GET'])->name('logout');
 });
 

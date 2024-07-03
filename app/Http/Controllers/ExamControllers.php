@@ -120,4 +120,8 @@ class ExamControllers extends Controller
             return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
+
+    public function runningExam_GET(Request $request){
+        return view('exam_users.index');
+    }
 }    
