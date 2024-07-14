@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeControllers;
 use App\Http\Controllers\UserControllers;
 use App\Http\Controllers\ExamControllers;
 use App\Http\Controllers\QuestionControllers;
+use App\Http\Controllers\FunctionControllers;
 
 
 Route::middleware(['auth', 'auth.session'])->group(function () {
@@ -33,7 +34,14 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::get('/create-question/{id}', [QuestionControllers::class, 'create_GET'])->name('question.create');
     Route::post('/insert-question', [QuestionControllers::class, 'insert_POST'])->name('question.post');
 
-    Route::get('/running-exam/{id}', [ExamControllers::class, 'runningExam_GET'])->name('exam.running');
+    Route::get('/running-exam/{exam_id}/{num}', [ExamControllers::class, 'runningExam_GET'])->name('exam.running');
+    Route::get('/waiting-room', [ExamControllers::class, 'waiting_room_GET'])->name('exam.room');
+    Route::post('/save-answer/{id}', [ExamControllers::class, 'save_answer_POST'])->name('save.answer');
+
+
+    Route::get('/calculate-multiple/{user_id}/{exam_id}', [FunctionControllers::class, 'calculate_multiple']);
+    Route::get('/calculate-single/{user_id}/{exam_id}', [FunctionControllers::class, 'calculate_single']);
+    Route::get('/calculate-combined/{user_id}/{exam_id}', [FunctionControllers::class, 'join_calculate']);
 
 
     Route::get('/logout', [AuthControllers::class, 'logout_GET'])->name('logout');

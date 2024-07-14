@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_answers', function (Blueprint $table) {
+        Schema::create('matching_answers', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id');
-            $table->integer('user_question_id')->nullable();
             $table->integer('question_id');
-            $table->string('text')->nullable();
-            $table->index(['user_id','user_question_id','question_id']);
+            $table->integer('user_id')->nullable();
+            $table->integer('answer_id')->nullable();
+            $table->integer('target_answer_id')->nullable();
+            $table->index(['user_id','question_id','target_answer_id']);
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_answers');
+        Schema::dropIfExists('matching_answers');
     }
 };

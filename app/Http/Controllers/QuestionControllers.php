@@ -125,6 +125,5 @@ class QuestionControllers extends Controller
         } 
 
         return back()->with('success','berhasil menambahkan soal');
-
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use DB;
 use Auth;
+use Exception;
 class ExamControllers extends Controller
 {
     public function index_GET(Request $request){
@@ -120,59 +121,239 @@ class ExamControllers extends Controller
         }
     }
 
-    public function runningExam_GET(Request $request , $num){
+    public function runningExam_GET(Request $request ,$exam_id, $num){
         $user_id = Auth::user()->id;
-        $exam_id = $request->exam_id ?? 4;
+        $exam_id = $exam_id;
         $checkuser = DB::select("SELECT * FROM exam_users WHERE user_id = $user_id AND status = 1 AND exam_id = $exam_id");
         if(!$checkuser){
             return back();
         }
+        $exam = DB::SELECT("SELECT * , DATE(start_at) AS start_date, TIME(start_at) AS start_time FROM exams WHERE id = $exam_id")[0];
+        $question = DB::SELECT(
+                    "SELECT *
+                        FROM (
+                            SELECT 
+                                RANK() OVER (ORDER BY id) AS `rank`,
+                                questions.*
+                            FROM 
+                                questions
+                        ) AS RankedQuestions
+                        WHERE `rank` = $num;
 
-        $query =  "SELECT
-            sub.rank,
-            sub.id,
-            sub.question,
-            sub.question_type_id,
-            JSON_ARRAYAGG(
-                JSON_OBJECT(
-                    'question_type', aq.question_type,
-                    'answer', aq.answer,
-                    'file', aq.file,
-                    'is_true', aq.is_true,
-                    'parent_answer_id', aq.parent_answer_id,
-                    'answeres_user', ua.user_answers
-                )
-            ) AS answers
-        FROM (
-            SELECT 
-                    q.id,
-                    q.question,
-                    q.question_type_id,
-            RANK() OVER (ORDER BY q.id) AS `rank`
-            FROM questions AS q
-            WHERE q.exam_id = $exam_id
-        ) AS sub
-        LEFT JOIN answer_question AS aq ON sub.id = aq.question_id
-        LEFT JOIN (
-            SELECT 
-                aq.id AS answer_question_id,
-                JSON_ARRAYAGG(ua.user_answer_id) AS user_answers
-            FROM answer_question AS aq
-            LEFT JOIN user_answers AS ua ON aq.id = ua.user_answer_id AND ua.user_id = $user_id AND ua.is_key_status = 1
-            GROUP BY aq.id
-        ) AS ua ON aq.id = ua.answer_question_id
-        WHERE sub.rank = $num
-        GROUP BY sub.rank, sub.id, sub.question, sub.question_type_id
-        ORDER BY sub.rank ASC;";
+                    ");
 
-        $data = DB::SELECT(
-            $query
-        );
+        $question_id = $question[0]->id;
 
-        $answer = json_decode($data[0]->answers,true);
-        $jml_soal = DB::SELECT("SELECT COUNT(*) AS jml_soal FROM questions WHERE exam_id = $exam_id")[0];
+        if (in_array($question[0]->question_type_id, [1, 2, 4])) {
+            $answer = DB::SELECT(
+                "SELECT * FROM (
+                SELECT 
+                        aq.id,
+                        aq.question_id,
+                        aq.question_type,
+                        aq.answer,
+                        aq.file,
+                        aq.parent_answer_id,
+                        CASE WHEN ua.id IS NOT NULL THEN 1 ELSE 0 END AS key_user,
+                        ua.text AS key_text
+                    FROM 
+                        answer_question AS aq 
+                        LEFT JOIN user_answers AS ua ON aq.question_id = ua.question_id AND aq.id = ua.user_answer_id AND ua.user_id = $user_id
+                    WHERE 
+                        aq.question_id = $question_id 
+                        AND aq.parent_answer_id IS NULL
+
+                    UNION ALL
+
+                    SELECT 
+                        NULL as id,
+                        aq.question_id,
+                        4 AS question_type,
+                        NULL As answer,
+                        NULL AS file,
+                        NULL AS parent_answer_id,
+                        0 AS key_user,
+                        aq.text AS key_text
+                    FROM 
+                        user_answers AS aq 
+                    WHERE 
+                        aq.question_id = $question_id
+                        AND aq.user_id = $user_id
+                ) AS my_data"
+            );
+
+        }else if($question[0]->question_type_id == 3){
+            $answer = DB::SELECT(
+                " SELECT 
+                        aq.id,
+                        aq.question_id,
+                        aq.question_type,
+                        aq.answer,
+                        aq.file,
+                        aq.parent_answer_id,
+                        CASE WHEN ua.id IS NOT NULL THEN 1 ELSE 0 END AS key_user,
+                        ua.text AS key_text
+                    FROM 
+                        answer_question AS aq 
+                        LEFT JOIN user_answers AS ua ON aq.question_id = ua.question_id AND aq.id = ua.user_answer_id
+                    WHERE 
+                        aq.question_id = $question_id 
+                        AND aq.parent_answer_id IS NULL"
+            );
+        }
+
+
+        $checkMatching = DB::SELECT("SELECT COUNT(*) AS total FROM matching_answers WHERE question_id = $question_id AND user_id = $user_id");
+        if($checkMatching[0]->total == 0){
+            $target = DB::SELECT(
+                "SELECT 
+                        aq.id,
+                        aq.question_id,
+                        aq.question_type,
+                        aq.answer,
+                        aq.file,
+                        aq.parent_answer_id,
+                        CASE WHEN ua.id IS NOT NULL THEN 1 ELSE 0 END AS key_user,
+                        ua.text AS key_text
+                    FROM 
+                        answer_question AS aq 
+                        LEFT JOIN user_answers AS ua ON aq.question_id = ua.question_id AND aq.id = ua.user_answer_id
+                    WHERE
+                        aq.question_id = $question_id 
+                        AND aq.parent_answer_id IS NOT NULL ORDER BY RAND()"
+            );
+        }else{
+            $target = DB::SELECT(
+                "SELECT
+                    ma.target_answer_id AS id,
+                    ma.question_id ,
+                    3 AS question_type,
+                    aq.answer ,
+                    aq.file,
+                    ma.answer_id AS parent_answer_id, 
+                    0 AS key_user,
+                    NULL AS key_text
+                FROM matching_answers AS ma LEFT JOIN answer_question AS aq ON ma.question_id = aq.question_id AND ma.target_answer_id = aq.id
+                WHERE ma.user_id = $user_id AND ma.question_id = $question_id  ORDER BY answer_id ASC"
+            );
+        }
+
         // return $answer;
-
-        return view('exam_users.index_',['data'=>$data[0] , 'answers'=>$answer , 'num'=>$num , 'jml_soal'=>$jml_soal]);
+        $jml_soal = DB::SELECT("SELECT COUNT(*) AS jml_soal FROM questions WHERE exam_id = $exam_id")[0];
+        return view('exam_users.index',['question'=>$question[0]  ,'answers'=>$answer, 'num'=>$num , 'jml_soal'=>$jml_soal ,'exam'=>$exam , 'target'=>$target]);
     }
+
+    public function save_answer_POST(Request $request, $page) {
+        $choose_option = $request->choose_option ;
+        $index_option = $request->index_option ;
+        $question_id = $request->question_id ?? null;
+        $answer_text = $request->answer_text ?? null;
+
+        $target_answer = $request->target ?? [];
+    
+        $user_id = Auth::user()->id;
+    
+        $option = array();
+        DB::beginTransaction();
+        try {
+            if((is_array($choose_option) && sizeof($index_option) > 0) || ($choose_option != null && sizeof($index_option) > 0) || $answer_text){
+                DB::table('user_answers')->where('user_id', $user_id)->where('question_id', $question_id)->delete();
+                DB::table('matching_answers')->where('user_id', $user_id)->where('question_id', $question_id)->delete();
+            }
+    
+            // return (is_array($choose_option) && sizeof($index_option) > 0) == true ? 'true' : 'false';
+            if ((is_array($choose_option) && sizeof($index_option) > 0) || ($choose_option != null && sizeof($index_option) > 0)) {
+                if (is_array($choose_option)) {
+                    // For checkboxes
+                    foreach ($index_option as $index => $id) {
+                        if (in_array($index, $choose_option)) {
+                            $option[] = $id;
+                        }
+                    }
+                } else {
+                    // For radio buttons
+                    foreach ($index_option as $index => $id) {
+                        if ($index == $choose_option) {
+                            $option[] = $id;
+                            break;
+                        }
+                    }
+                }
+    
+                // Insert new answers
+                for ($i = 0; $i < sizeof($option); $i++) {
+                    DB::table('user_answers')->insert([
+                        'user_id' => $user_id,
+                        'question_id' => $question_id,
+                        'user_answer_id' => $option[$i],
+                    ]);
+                }
+            } else if ($answer_text) {
+                // Handle text answers
+                DB::table('user_answers')->insert([
+                    'user_id' => $user_id,
+                    'question_id' => $question_id,
+                    'text' => $answer_text
+                ]);
+            }else if(sizeof($target_answer) > 0){
+                // Handle matching answers
+                DB::table('matching_answers')->where('user_id', $user_id)->where('question_id', $question_id)->delete();
+
+                for ($i=0; $i < sizeof($target_answer) ; $i++) { 
+                    DB::table('matching_answers')->insert([
+                        'question_id' => $question_id,
+                        'user_id' => $user_id,
+                        'answer_id' => $index_option[$i],
+                        'target_answer_id' => $target_answer[$i]
+                    ]);
+                }
+            }
+
+    
+            $result['message'] = 'Data has been saved';
+            $result['status'] = true;
+            DB::commit();
+        } catch (Exception $e) {
+            $result['message'] = 'Data not saved';
+            $result['status'] = false;
+            DB::rollback();
+        }
+    
+        return $result;
+    }
+
+    public function waiting_room_GET(Request $request)
+    {
+        $user_id = Auth::user()->id;
+        
+        $data = DB::select("
+            SELECT 
+                eu.*, 
+                e.name, 
+                e.description, 
+                e.duration, 
+                e.start_at AS start_at_exam,
+                CASE 
+                    WHEN DATE(e.start_at) = CURRENT_DATE THEN
+                        CASE 
+                            WHEN TIME(NOW()) BETWEEN TIME(e.start_at) AND TIME(DATE_ADD(e.start_at, INTERVAL e.duration MINUTE)) THEN 'RUNNING'
+                            WHEN TIME(NOW()) > TIME(DATE_ADD(e.start_at, INTERVAL e.duration MINUTE)) THEN 'EXPIRED'
+                            ELSE 'NOT READY'
+                        END
+                    WHEN DATE(e.start_at) > CURRENT_DATE THEN 'NOT READY'
+                    ELSE 'EXPIRED'
+                END AS status_exam
+            FROM 
+                exam_users AS eu
+            LEFT JOIN 
+                exams AS e ON eu.exam_id = e.id
+            WHERE 
+                eu.status = 1
+            AND 
+                eu.user_id = $user_id
+        ");
+    
+        return view('exam_users.room', ['data' => $data]);
+    }
+    
 }

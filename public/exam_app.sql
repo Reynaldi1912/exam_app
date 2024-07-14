@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jul 10, 2024 at 12:10 AM
+-- Generation Time: Jul 14, 2024 at 03:11 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.8
 
@@ -38,34 +38,6 @@ CREATE TABLE `answer_question` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data for table `answer_question`
---
-
-INSERT INTO `answer_question` (`id`, `question_id`, `question_type`, `answer`, `file`, `is_true`, `parent_answer_id`, `created_at`, `updated_at`) VALUES
-(5, 12, 1, 'BENAR', NULL, 1, NULL, NULL, '2024-07-07 14:31:38'),
-(6, 12, 1, 'SALAH', NULL, 0, NULL, NULL, '2024-07-07 14:31:42'),
-(7, 13, 3, 'Raffi', NULL, 1, NULL, NULL, NULL),
-(8, 13, 3, 'Nagita', NULL, 1, 7, NULL, '2024-07-03 13:53:22'),
-(9, 13, 3, 'Reynaldi', NULL, 1, NULL, NULL, NULL),
-(10, 13, 3, 'Ericha', NULL, 1, 9, NULL, '2024-07-03 13:53:26'),
-(11, 14, 2, 'Harimau', NULL, 1, NULL, NULL, NULL),
-(12, 14, 2, 'Udang', NULL, 1, NULL, NULL, NULL),
-(13, 14, 2, 'Meja', NULL, 0, NULL, NULL, NULL),
-(14, 15, 1, 'Benar', NULL, 1, NULL, NULL, NULL),
-(15, 15, 1, 'Salah', NULL, 0, NULL, NULL, NULL),
-(16, 16, 1, 'Benar', NULL, 1, NULL, NULL, NULL),
-(17, 16, 1, 'Salah', NULL, 0, NULL, NULL, NULL),
-(18, 18, 1, 'Reynaldi', NULL, 1, NULL, NULL, NULL),
-(19, 18, 1, 'Reynaldo', NULL, 0, NULL, NULL, NULL),
-(20, 18, 1, 'Ronaldo', NULL, 0, NULL, NULL, NULL),
-(21, 18, 1, 'Messi', NULL, 0, NULL, NULL, NULL),
-(22, 18, 1, 'Reynaldus', NULL, 0, NULL, NULL, NULL),
-(23, 18, 1, 'Aldous', NULL, 0, NULL, NULL, NULL),
-(24, 19, 2, 'Ojin', NULL, 1, NULL, NULL, NULL),
-(25, 19, 2, 'Nizar', NULL, 1, NULL, NULL, NULL),
-(26, 19, 2, 'Eba', NULL, 1, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -150,7 +122,7 @@ CREATE TABLE `exams` (
 --
 
 INSERT INTO `exams` (`id`, `name`, `description`, `app_exam_id`, `duration`, `start_at`, `created_at`, `updated_at`) VALUES
-(4, 'Sesi Try Out 1', 'ini adalah sesi try put 1', 2, 120, '2024-06-11 00:00:00', NULL, NULL);
+(4, 'Sesi Try Out 1', 'ini adalah sesi try put 1', 2, 300, '2024-07-14 17:10:00', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -168,14 +140,6 @@ CREATE TABLE `exam_users` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `exam_users`
---
-
-INSERT INTO `exam_users` (`id`, `exam_id`, `user_id`, `start_at`, `finish_at`, `status`, `created_at`, `updated_at`) VALUES
-(3, 4, 4, NULL, NULL, 1, '2024-06-22 07:58:31', '2024-06-29 08:16:45'),
-(4, 4, 5, NULL, NULL, 0, '2024-06-29 08:04:59', '2024-07-07 07:05:13');
 
 -- --------------------------------------------------------
 
@@ -227,6 +191,22 @@ CREATE TABLE `job_batches` (
   `created_at` int NOT NULL,
   `finished_at` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `matching_answers`
+--
+
+CREATE TABLE `matching_answers` (
+  `id` int NOT NULL,
+  `question_id` int DEFAULT NULL,
+  `user_id` int DEFAULT NULL,
+  `answer_id` int DEFAULT NULL,
+  `target_answer_id` int DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -283,20 +263,6 @@ CREATE TABLE `questions` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `questions`
---
-
-INSERT INTO `questions` (`id`, `question`, `question_type_id`, `exam_id`, `created_at`, `updated_at`) VALUES
-(12, '<p>Tuliskan Pertanyaan Anda</p>', 1, 4, NULL, NULL),
-(13, '<p>Jodohkan Pasangan Berikut</p>', 3, 4, NULL, NULL),
-(14, '<p>Manakah Hewan ?</p>', 2, 4, NULL, NULL),
-(15, '<p>Apakah Buaya Amphibi ?</p>', 1, 4, NULL, NULL),
-(16, '<p>Mobil Beroda 4 ?</p>', 1, 4, NULL, NULL),
-(17, '<p>Jelaskan Apa Itu Laptop ?</p>', 4, 4, NULL, NULL),
-(18, '<p>Siapa Nama Pacar Ericha Yang Benar Dibawah Ini ?</p>', 1, 4, NULL, NULL),
-(19, '<p>Siapa yg merupakan mantan ericha yg benar ?</p>', 2, 4, NULL, NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -334,8 +300,8 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('2Ah5J2c03vpDdTlxwXyXY1QxF1R1ClYYzYHE0QN8', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36', 'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiZmplSlZCeWhRcTNtUVZ6YmRkZnY3RU5DQ0RpaTNtb0d5OWxKb1h0RSI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjM5OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvY3JlYXRlLXF1ZXN0aW9uLzQiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO3M6MTc6InBhc3N3b3JkX2hhc2hfd2ViIjtzOjMyOiJjYjM5NDY2ZTZjYjI3ZWJhODAwNmQ4ZWYwNWMyYWZhNiI7fQ==', 1720544409),
-('EOQTkafMUSJCEKv1WdB3HgiuaRZQYKsvHag3iD1J', 4, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36', 'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiTUhYY3RUVklIREI5dnpDYlFTZjQwUG5yYVU5ajJZSHlBOFo5OUZFVCI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjM2OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvcnVubmluZy1leGFtLzYiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTo0O3M6MTc6InBhc3N3b3JkX2hhc2hfd2ViIjtzOjMyOiJhZTBiMmIyZDljOGM0NjYyZDQyMDQyZGQzYWUzNzZiMiI7fQ==', 1720544864);
+('7aSqfWrN4ToPyPY4k858Wy2AGt2bCkpXfZfaXXll', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36', 'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiUWg1dXVaQXphZUlrWHVhVnpnRVRhb09POG9FTmtZN245ZGY1YzJiaCI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjQ0OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvY2FsY3VsYXRlLWNvbWJpbmVkLzQvNCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7czoxNzoicGFzc3dvcmRfaGFzaF93ZWIiO3M6MzI6ImNiMzk0NjZlNmNiMjdlYmE4MDA2ZDhlZjA1YzJhZmE2Ijt9', 1720969691),
+('unye48VdwYw2Zo5v3bRXQomkaFgTT2HvTS0jR9pA', 4, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36', 'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiTlZZMFRZWkhzc0swYmt0Wmo2RlplWnY0T2NPV2JOU0I3MXIzQzUyTSI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjM0OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvd2FpdGluZy1yb29tIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6NDtzOjE3OiJwYXNzd29yZF9oYXNoX3dlYiI7czozMjoiYWUwYjJiMmQ5YzhjNDY2MmQ0MjA0MmRkM2FlMzc2YjIiO30=', 1720969800);
 
 -- --------------------------------------------------------
 
@@ -374,18 +340,12 @@ INSERT INTO `users` (`id`, `username`, `email`, `role`, `exam_app`, `email_verif
 CREATE TABLE `user_answers` (
   `id` bigint UNSIGNED NOT NULL,
   `user_id` int NOT NULL,
-  `user_answer_id` int NOT NULL,
-  `is_key_status` int NOT NULL,
+  `question_id` int DEFAULT NULL,
+  `user_answer_id` int DEFAULT NULL,
+  `text` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `user_answers`
---
-
-INSERT INTO `user_answers` (`id`, `user_id`, `user_answer_id`, `is_key_status`, `created_at`, `updated_at`) VALUES
-(1, 4, 5, 1, NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -455,6 +415,15 @@ ALTER TABLE `job_batches`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `matching_answers`
+--
+ALTER TABLE `matching_answers`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`question_id`),
+  ADD KEY `target_answer_id` (`question_id`),
+  ADD KEY `question_id` (`question_id`);
+
+--
 -- Indexes for table `migrations`
 --
 ALTER TABLE `migrations`
@@ -510,7 +479,7 @@ ALTER TABLE `user_answers`
 -- AUTO_INCREMENT for table `answer_question`
 --
 ALTER TABLE `answer_question`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `app_exam`
@@ -534,7 +503,7 @@ ALTER TABLE `exams`
 -- AUTO_INCREMENT for table `exam_users`
 --
 ALTER TABLE `exam_users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -549,6 +518,12 @@ ALTER TABLE `jobs`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `matching_answers`
+--
+ALTER TABLE `matching_answers`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
@@ -558,7 +533,7 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT for table `questions`
 --
 ALTER TABLE `questions`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `question_type`
@@ -576,7 +551,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `user_answers`
 --
 ALTER TABLE `user_answers`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
